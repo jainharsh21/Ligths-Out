@@ -2,20 +2,23 @@ import React, { Component } from "react";
 import Cell from "./Cell";
 import "./Board.css";
 
+
+
 class Board extends Component {
   static defaultProps = {
     nrows: 5,
     ncols: 5,
-    chanceLightStartsOn: 0.3
+    chanceLightStartsOn: 0.25
   };
-
   constructor(props) {
     super(props);
+
     this.state = {
       hasWon: false,
       board: this.createBoard()
     };
   }
+
 
   createBoard() {
     let board = [];
@@ -29,7 +32,6 @@ class Board extends Component {
     return board;
   }
 
-  /** handle changing a cell: update board & determine if winner */
 
   flipCellsAround(coord) {
     let { ncols, nrows } = this.props;
@@ -37,40 +39,29 @@ class Board extends Component {
     let [y, x] = coord.split("-").map(Number);
 
     function flipCell(y, x) {
-      // if this coord is actually on board, flip it
 
       if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
         board[y][x] = !board[y][x];
       }
     }
-
-    flipCell(y, x);
-    flipCell(y - 1, x);
-    flipCell(y + 1, x);
-    flipCell(y, x + 1);
-    flipCell(y, x - 1);
-
     // TODO: flip this cell and the cells around it
-
-    // win when every cell is turned off
-    // TODO: determine is the game has been won
+    flipCell(y, x); //Flip initial cell
+    flipCell(y, x - 1); //flip left
+    flipCell(y, x + 1); //flip right
+    flipCell(y - 1, x); //flip below
+    flipCell(y + 1, x); //flip above
 
     let hasWon = board.every(row => row.every(cell => !cell));
 
-    this.setState({ board, hasWon });
+    this.setState({ board: board, hasWon: hasWon });
   }
 
-  /** Render game board or winning message. */
-
-  render() {
-    if (this.state.hasWon) {
-      return <h1>You Won!!</h1>;
-    }
+  makeTable() {
     let tblBoard = [];
     for (let y = 0; y < this.props.nrows; y++) {
       let row = [];
       for (let x = 0; x < this.props.ncols; x++) {
-        let coord = `${y} - ${x}`;
+        let coord = `${y}-${x}`;
         row.push(
           <Cell
             key={coord}
@@ -82,9 +73,29 @@ class Board extends Component {
       tblBoard.push(<tr key={y}>{row}</tr>);
     }
     return (
-      <table className="Board">
+      <table className='Board'>
         <tbody>{tblBoard}</tbody>
       </table>
+    );
+  }
+  render() {
+    return (
+      <div>
+        {this.state.hasWon ? (
+          <div className='winner'>
+            <span className='neon-orange'>YOU</span>
+            <span className='neon-blue'>WIN!</span>
+          </div>
+        ) : (
+          <div>
+            <div className='Board-title'>
+              <div className='neon-orange'>Lights</div>
+              <div className='neon-blue'>Out</div>
+            </div>
+            {this.makeTable()}
+          </div>
+        )}
+      </div>
     );
   }
 }
