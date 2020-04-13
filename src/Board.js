@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import Cell from "./Cell";
 import "./Board.css";
 
-
-
 class Board extends Component {
   static defaultProps = {
     nrows: 5,
@@ -17,8 +15,8 @@ class Board extends Component {
       hasWon: false,
       board: this.createBoard()
     };
+    this.flipCellsAround = this.flipCellsAround.bind(this);
   }
-
 
   createBoard() {
     let board = [];
@@ -32,14 +30,13 @@ class Board extends Component {
     return board;
   }
 
-
   flipCellsAround(coord) {
+    console.log(coord);
     let { ncols, nrows } = this.props;
     let board = this.state.board;
     let [y, x] = coord.split("-").map(Number);
 
     function flipCell(y, x) {
-
       if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
         board[y][x] = !board[y][x];
       }
@@ -64,16 +61,17 @@ class Board extends Component {
         let coord = `${y}-${x}`;
         row.push(
           <Cell
+            coord={coord}
             key={coord}
             isLit={this.state.board[y][x]}
-            flipCellsAroundMe={() => this.flipCellsAround(coord)}
+            flipCellsAroundMe={this.flipCellsAround}
           />
         );
       }
       tblBoard.push(<tr key={y}>{row}</tr>);
     }
     return (
-      <table className='Board'>
+      <table className="Board">
         <tbody>{tblBoard}</tbody>
       </table>
     );
@@ -82,15 +80,15 @@ class Board extends Component {
     return (
       <div>
         {this.state.hasWon ? (
-          <div className='winner'>
-            <span className='neon-orange'>YOU</span>
-            <span className='neon-blue'>WIN!</span>
+          <div className="winner">
+            <span className="neon-orange">YOU</span>
+            <span className="neon-blue">WIN!</span>
           </div>
         ) : (
           <div>
-            <div className='Board-title'>
-              <div className='neon-orange'>Lights</div>
-              <div className='neon-blue'>Out</div>
+            <div className="Board-title">
+              <div className="neon-orange">Lights</div>
+              <div className="neon-blue">Out</div>
             </div>
             {this.makeTable()}
           </div>
